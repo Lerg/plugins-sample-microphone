@@ -12,7 +12,7 @@ local x, y = display.contentCenterX, display.contentCenterY - 200
 local w, h = display.contentWidth * 0.4, 50
 local x_spacing = display.contentWidth * 0.25
 
-local gain_label = display.newText{text = 'Gain: ', x = 0, y = display.contentHeight - 14, align = 'left'}
+local gain_label = display.newText{text = 'Gain: ', x = 0, y = display.contentHeight - 0.1 * display.contentHeight, align = 'left'}
 gain_label.anchorX, gain_label.anchorY = 0, 1
 gain_label:setFillColor(0.2)
 
@@ -25,27 +25,25 @@ local circle = display.newCircle(x, display.contentHeight - radius, radius)
 circle:setFillColor(0, 1, 1)
 circle:scale(0.01, 0.01)
 
+local is_initialized = false
+
 function circle:enterFrame()
-	local volume = microphone.getVolume()
-	local scale = math.sqrt(volume) -- Values are from 0 to 1. Normal values are quite low, hence sqrt.
-	self.xScale, self.yScale = scale, scale
-	gain_label.text = string.format('Gain: %.2f', microphone.getGain())
-	volume_label.text = string.format('Volume: %.2f', volume)
+	if is_initialized then
+		local volume = microphone.getVolume()
+		local scale = math.sqrt(volume) -- Values are from 0 to 1. Normal values are quite low, hence sqrt.
+		self.xScale, self.yScale = scale, scale
+		gain_label.text = string.format('Gain: %.2f', microphone.getGain())
+		volume_label.text = string.format('Volume: %.2f', volume)
+	end
 end
 Runtime:addEventListener('enterFrame', circle)
 
 local function microphone_listener(event)
-	-- Events: 'init', 'recorded'
-	-- Error codes:
-	--	'already_initialized' - init() called before stopping recording.
-	--	'init_failed' - Failed to init for various reasons.
-	--	'missing_microphone' - No microphone.
-	--	'missing_permission' - RECORD_AUDIO permission is missing from the manifest file.
-	--	'denied_permission' - User denied permission.
-	--	'permission_request_failed' - User didn't grant permission when requested.
-	--	'file_open_failed' - Failed to open the file.
-	--	'file_write_failed' - Failed to write to the file.
-	--	'empty_recording' - Recording didn't trigger the detector.
+	if not event.isError then
+		if event.name == 'init' then
+			is_initialized = true
+		end
+	end
 	print(json.encode(event))
 end
 
