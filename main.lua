@@ -40,7 +40,7 @@ Runtime:addEventListener('enterFrame', circle)
 
 local function microphone_listener(event)
 	if not event.isError then
-		if event.name == 'init' then
+		if event.phase == 'init' then
 			is_initialized = true
 		end
 	end
@@ -59,18 +59,18 @@ widget.newButton{
 			filename = filename,
 			--baseDir = system.DocumentsDirectory,
 			--sampleRate = 44100, -- Sample rate in Hz.
-			detector = { -- Optional.
-				on = 0.2, -- Start recording when volume is larger or equal to this value.
-				off = 0.05 -- Trim the end if the volume of the last part is less than this value.
-			},
-			gain = { -- Gain control.
+			--[[detector = { -- Optional.
+				on = 0.05, -- Start recording when volume is larger or equal to this value.
+				off = 0.01 -- Trim the end if the volume of the last part is less than this value.
+			},]]
+			--[[gain = { -- Gain control.
 				--min = 0, -- Minimal gain.
 				max = 10, -- Maximum gain.
 				--value = 1, -- Initial gain value.
-				target = 0.1, -- Target volume. 0 is disable.
+				target = 0.3, -- Target volume. 0 is disable.
 				--speed = 0.1, -- Gain adjustment speed.
 				--allowClipping = false, -- If true, gain is not automatically reduced to prevent clipping.
-			},
+			},]]
 			listener = microphone_listener
 		}
 	end}
